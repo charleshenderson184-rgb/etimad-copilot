@@ -15,7 +15,27 @@ export function SiteNav() {
   const { theme, toggle } = useTheme();
   const { start: startTour } = useTour();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const mobileNavRef = useRef<HTMLDivElement>(null);
+
+  // Close mobile nav on route change
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
+
+  // Close mobile nav on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (mobileNavRef.current && !mobileNavRef.current.contains(e.target as Node)) {
+        setMobileNavOpen(false);
+      }
+    }
+    if (mobileNavOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [mobileNavOpen]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -248,18 +268,74 @@ export function SiteNav() {
             <>
               <Link
                 href="/signin"
-                className="px-3 py-1.5 rounded-lg text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors"
+                className="hidden sm:inline-block px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap text-stone-600 hover:text-stone-900 transition-colors"
               >
                 Sign in
               </Link>
               <Link
                 href="/signup"
-                className="px-3.5 py-1.5 rounded-lg bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors shadow-sm"
+                className="px-3.5 py-1.5 rounded-lg bg-stone-900 text-white text-sm font-medium whitespace-nowrap hover:bg-stone-800 transition-colors shadow-sm"
               >
                 Sign up
               </Link>
             </>
           )}
+
+          {/* Mobile hamburger — visible below md, opens the same links as the desktop nav strip */}
+          <div className="relative md:hidden" ref={mobileNavRef}>
+            <button
+              onClick={() => setMobileNavOpen((o) => !o)}
+              aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileNavOpen}
+              className="w-9 h-9 flex items-center justify-center rounded-lg text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileNavOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+
+            {mobileNavOpen && (
+              <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-stone-900 rounded-xl ring-1 ring-stone-200 dark:ring-stone-800 shadow-xl animate-fade-in-down origin-top-right overflow-hidden">
+                <div className="py-1">
+                  {links.map((link) => {
+                    const isActive =
+                      link.href === "/"
+                        ? pathname === "/"
+                        : pathname.startsWith(link.href);
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setMobileNavOpen(false)}
+                        className={`block px-4 py-2.5 text-sm font-medium ${
+                          isActive
+                            ? "text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30"
+                            : "text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/60"
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+                {!user && (
+                  <div className="border-t border-stone-100 dark:border-stone-800 px-4 py-3 sm:hidden">
+                    <Link
+                      href="/signin"
+                      onClick={() => setMobileNavOpen(false)}
+                      className="block text-sm font-medium text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100"
+                    >
+                      Sign in
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>
