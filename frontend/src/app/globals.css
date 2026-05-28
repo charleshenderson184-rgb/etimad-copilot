@@ -1,0 +1,582 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Override Tailwind v4's default media-query dark mode. We control dark mode
+   via the .dark class on html (toggled by our ThemeProvider). This ensures
+   dark: variants only apply when the user explicitly chose dark theme,
+   not when their OS is in dark mode. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─── Design tokens ─────────────────────────────────── */
+
+:root {
+  /* Surfaces */
+  --background: #fafaf9;
+  --foreground: #0c0a09;
+  --surface: #ffffff;
+  --surface-2: #f5f5f4;
+  --surface-3: #e7e5e4;
+  --border: #e7e5e4;
+  --border-strong: #d6d3d1;
+  --muted: #57534e;
+  --muted-2: #a8a29e;
+
+  /* Brand — Saudi emerald */
+  --emerald-50: #ecfdf5;
+  --emerald-100: #d1fae5;
+  --emerald-200: #a7f3d0;
+  --emerald-300: #6ee7b7;
+  --emerald-400: #34d399;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+  --emerald-700: #047857;
+  --emerald-800: #065f46;
+  --emerald-900: #064e3b;
+  --emerald-950: #022c22;
+
+  /* Accents */
+  --gold-400: #facc15;
+  --gold-500: #eab308;
+  --gold-600: #ca8a04;
+
+  /* Effects */
+  --glow-emerald: 0 0 40px -4px rgba(16, 185, 129, 0.35);
+  --glow-emerald-strong: 0 0 60px -2px rgba(16, 185, 129, 0.5);
+  --shadow-elev-1: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-elev-2: 0 4px 8px -2px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-elev-3: 0 12px 24px -8px rgba(0, 0, 0, 0.08), 0 8px 16px -8px rgba(0, 0, 0, 0.06);
+  --shadow-elev-4: 0 24px 48px -12px rgba(0, 0, 0, 0.12), 0 16px 32px -16px rgba(0, 0, 0, 0.08);
+  --shadow-emerald: 0 8px 32px -8px rgba(4, 120, 87, 0.25);
+
+  /* Easing */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dark {
+  --background: #050505;
+  --foreground: #fafaf9;
+  --surface: #0f0f0f;
+  --surface-2: #1a1a1a;
+  --surface-3: #262626;
+  --border: #262626;
+  --border-strong: #404040;
+  --muted: #a8a29e;
+  --muted-2: #57534e;
+
+  --shadow-elev-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-elev-2: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --shadow-elev-3: 0 12px 24px rgba(0, 0, 0, 0.4);
+  --shadow-elev-4: 0 24px 48px rgba(0, 0, 0, 0.5);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* ─── Base ──────────────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+}
+html:not(.dark) { color-scheme: light; }
+html.dark { color-scheme: dark; }
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-feature-settings: "ss01", "ss02", "cv01", "cv11", "ss03";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  letter-spacing: -0.011em;
+}
+
+/* Premium scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--muted); background-clip: padding-box; }
+
+/* ─── Keyframes ─────────────────────────────────────── */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in-down {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes aurora {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.05); }
+  66% { transform: translate(-30px, 20px) scale(0.95); }
+}
+@keyframes aurora-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-50px, 40px) scale(1.1); }
+}
+@keyframes aurora-3 {
+  0%, 100% { transform: translate(0, 0) scale(0.9); }
+  50% { transform: translate(60px, -20px) scale(1.05); }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes gradient-x {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  50% { box-shadow: 0 0 0 16px rgba(16, 185, 129, 0); }
+}
+@keyframes float-1 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+@keyframes float-2 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(-1deg); }
+}
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+@keyframes ripple {
+  to { transform: scale(4); opacity: 0; }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes typing-dot {
+  0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+@keyframes border-shine {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+@keyframes text-shine {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ─── Animation utility classes ─────────────────────── */
+
+.animate-fade-in { animation: fade-in 0.5s var(--ease-out-quart); }
+.animate-fade-in-up { animation: fade-in-up 0.7s var(--ease-out-expo) both; }
+.animate-fade-in-down { animation: fade-in-down 0.5s var(--ease-out-quart) both; }
+.animate-scale-in { animation: scale-in 0.4s var(--ease-out-expo) both; }
+.animate-spin-slow { animation: spin-slow 24s linear infinite; }
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 8s ease infinite;
+}
+.animate-pulse-glow { animation: pulse-glow 2s infinite; }
+.animate-float-1 { animation: float-1 6s ease-in-out infinite; }
+.animate-float-2 { animation: float-2 7s ease-in-out infinite; }
+.animate-marquee { animation: marquee 30s linear infinite; }
+
+/* Staggered delays */
+.delay-50 { animation-delay: 50ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-700 { animation-delay: 700ms; }
+.delay-1000 { animation-delay: 1000ms; }
+
+/* ─── Visual primitives ─────────────────────────────── */
+
+/* Animated mesh gradient background */
+.bg-mesh {
+  background-image:
+    radial-gradient(at 20% 30%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(6, 78, 59, 0.06) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(52, 211, 153, 0.06) 0px, transparent 50%),
+    radial-gradient(at 90% 70%, rgba(120, 53, 15, 0.04) 0px, transparent 50%);
+}
+
+.dark .bg-mesh {
+  background-image:
+    radial-gradient(at 20% 30%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(6, 95, 70, 0.1) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(52, 211, 153, 0.08) 0px, transparent 50%);
+}
+
+/* Grid pattern with radial fade */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(6, 78, 59, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 78, 59, 0.05) 1px, transparent 1px);
+  background-size: 36px 36px;
+  background-position: -1px -1px;
+  mask-image: radial-gradient(ellipse 70% 60% at center, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at center, black 30%, transparent 80%);
+}
+.dark .bg-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+}
+
+/* Dot pattern */
+.bg-dots {
+  background-image: radial-gradient(rgba(6, 78, 59, 0.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse 50% 50% at center, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, black 30%, transparent 80%);
+}
+.dark .bg-dots {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+}
+
+/* Aurora blobs */
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+  pointer-events: none;
+  will-change: transform;
+}
+.aurora-1 { animation: aurora 18s ease-in-out infinite; }
+.aurora-2 { animation: aurora-2 22s ease-in-out infinite; }
+.aurora-3 { animation: aurora-3 26s ease-in-out infinite; }
+
+/* Text gradient — static and animated variants */
+.text-gradient {
+  background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #10b981 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.dark .text-gradient {
+  background: linear-gradient(135deg, #6ee7b7 0%, #34d399 50%, #10b981 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.text-gradient-shine {
+  background: linear-gradient(
+    100deg,
+    #064e3b 0%,
+    #047857 25%,
+    #34d399 50%,
+    #047857 75%,
+    #064e3b 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: text-shine 10s ease-in-out infinite;
+}
+.dark .text-gradient-shine {
+  background: linear-gradient(
+    100deg,
+    #34d399 0%,
+    #6ee7b7 25%,
+    #ecfdf5 50%,
+    #6ee7b7 75%,
+    #34d399 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Glass surfaces — stronger borders for visibility on light backgrounds */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(231, 229, 228, 0.8);  /* stone-200 visible on light */
+}
+.dark .glass {
+  background: rgba(15, 15, 15, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(214, 211, 209, 0.9);  /* stone-300 — solid feel */
+}
+.dark .glass-strong {
+  background: rgba(15, 15, 15, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Gradient borders */
+.gradient-border {
+  position: relative;
+  background: var(--surface);
+  border-radius: inherit;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.6), rgba(6, 78, 59, 0.2), rgba(16, 185, 129, 0.6));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.gradient-border-shine::before {
+  background: linear-gradient(
+    100deg,
+    rgba(16, 185, 129, 0) 0%,
+    rgba(16, 185, 129, 0.8) 30%,
+    rgba(16, 185, 129, 0.8) 70%,
+    rgba(16, 185, 129, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: border-shine 4s linear infinite;
+}
+
+/* Shadows */
+.shadow-elev-1 { box-shadow: var(--shadow-elev-1); }
+.shadow-elev-2 { box-shadow: var(--shadow-elev-2); }
+.shadow-elev-3 { box-shadow: var(--shadow-elev-3); }
+.shadow-elev-4 { box-shadow: var(--shadow-elev-4); }
+.shadow-emerald { box-shadow: var(--shadow-emerald); }
+.glow-emerald { box-shadow: var(--glow-emerald); }
+.glow-emerald-strong { box-shadow: var(--glow-emerald-strong); }
+
+/* Cards with hover lift */
+.card-lift {
+  transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
+  will-change: transform;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elev-4);
+}
+
+/* 3D perspective tilt */
+.card-tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.5s var(--ease-out-expo);
+}
+.card-tilt:hover {
+  transform: perspective(1200px) rotateX(2deg) rotateY(-2deg) translateY(-4px);
+}
+
+/* Spotlight effect — follows cursor via inline --mx/--my CSS vars */
+.spotlight {
+  position: relative;
+  overflow: hidden;
+}
+.spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    600px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(16, 185, 129, 0.12),
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.spotlight:hover::before { opacity: 1; }
+
+.dark .spotlight::before {
+  background: radial-gradient(
+    600px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(16, 185, 129, 0.18),
+    transparent 40%
+  );
+}
+
+/* Ripple button */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+.ripple::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: var(--ripple-y, 50%);
+  left: var(--ripple-x, 50%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent);
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+}
+.ripple.is-rippling::after { animation: ripple 0.6s ease-out; }
+
+/* Magnetic button base */
+.btn-magnetic {
+  transition: transform 0.2s var(--ease-out-expo);
+  will-change: transform;
+}
+
+/* Reveal-on-scroll utility — toggled via IntersectionObserver */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo);
+}
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+/* Typing indicator */
+.typing-dot { animation: typing-dot 1.4s infinite ease-in-out both; }
+.wave-bar { animation: wave 1.2s ease-in-out infinite; transform-origin: bottom; }
+
+/* RTL-aware fonts for Arabic text */
+:lang(ar), [dir="rtl"] {
+  font-family: "Geist", "Noto Sans Arabic", -apple-system, sans-serif;
+}
+
+/* Subtle noise overlay for premium texture */
+.noise {
+  position: relative;
+}
+.noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* ─── Dark mode legibility safety net ───────────────────────
+ * These rules use :where() so they have ZERO specificity. Any explicit
+ * dark:text-* or dark:bg-* class from Tailwind will override them.
+ * This catches every component that uses stone colors without dark variants.
+ */
+
+.dark :where(.text-stone-950) { color: rgb(250 250 249); }    /* → stone-50 */
+.dark :where(.text-stone-900) { color: rgb(245 245 244); }    /* → stone-100 */
+.dark :where(.text-stone-800) { color: rgb(231 229 228); }    /* → stone-200 */
+.dark :where(.text-stone-700) { color: rgb(214 211 209); }    /* → stone-300 */
+.dark :where(.text-stone-600) { color: rgb(168 162 158); }    /* → stone-400 */
+.dark :where(.text-stone-500) { color: rgb(168 162 158); }    /* → stone-400 */
+.dark :where(.text-stone-400) { color: rgb(120 113 108); }    /* → stone-500 */
+.dark :where(.text-stone-300) { color: rgb(87 83 78); }       /* → stone-600 */
+
+/* Background safety net — only for surface containers, not branded elements */
+.dark :where(.bg-white) { background-color: rgb(15 15 15); }       /* surface */
+.dark :where(.bg-stone-50) { background-color: rgb(26 26 26); }    /* surface-2 */
+.dark :where(.bg-stone-100) { background-color: rgb(38 38 38); }   /* surface-3 */
+
+/* Opacity-modified variants — Tailwind escapes / as \/ */
+.dark :where(.bg-white\/40) { background-color: rgb(15 15 15 / 0.55); }
+.dark :where(.bg-white\/60) { background-color: rgb(20 20 20 / 0.55); }
+.dark :where(.bg-white\/70) { background-color: rgb(15 15 15 / 0.7); }
+.dark :where(.bg-white\/80) { background-color: rgb(15 15 15 / 0.85); }
+.dark :where(.bg-stone-50\/30),
+.dark :where(.bg-stone-50\/40) { background-color: rgb(38 38 38 / 0.5); }
+.dark :where(.bg-stone-50\/50),
+.dark :where(.bg-stone-50\/60) { background-color: rgb(38 38 38 / 0.6); }
+.dark :where(.bg-stone-100\/40),
+.dark :where(.bg-stone-100\/60) { background-color: rgb(45 45 45 / 0.6); }
+.dark :where(.hover\:bg-stone-50\/40):hover,
+.dark :where(.hover\:bg-stone-50\/50):hover,
+.dark :where(.hover\:bg-stone-50\/60):hover { background-color: rgb(45 45 45 / 0.6); }
+.dark :where(.hover\:bg-stone-100\/60):hover { background-color: rgb(45 45 45 / 0.7); }
+
+/* Border + ring opacity variants */
+.dark :where(.border-stone-100\/60),
+.dark :where(.border-stone-200\/60) { border-color: rgb(64 64 64 / 0.6); }
+.dark :where(.ring-stone-200\/60),
+.dark :where(.ring-stone-200\/80) { --tw-ring-color: rgb(64 64 64 / 0.7); }
+.dark :where(.ring-stone-100\/60),
+.dark :where(.ring-stone-100) { --tw-ring-color: rgb(38 38 38); }
+
+/* Border safety net */
+.dark :where(.border-stone-100) { border-color: rgb(38 38 38); }
+.dark :where(.border-stone-200) { border-color: rgb(64 64 64); }
+.dark :where(.border-stone-300) { border-color: rgb(82 82 82); }
+
+/* Ring safety net (for ring-1 ring-stone-200 patterns) */
+.dark :where(.ring-stone-100) { --tw-ring-color: rgb(38 38 38); }
+.dark :where(.ring-stone-200) { --tw-ring-color: rgb(64 64 64); }
+.dark :where(.ring-stone-300) { --tw-ring-color: rgb(82 82 82); }
+
+/* Placeholder colors for form inputs */
+.dark :where(.placeholder\:text-stone-400)::placeholder { color: rgb(82 82 82); }
+.dark :where(.placeholder\:text-stone-500)::placeholder { color: rgb(82 82 82); }
+
+/* Inputs with bg-white that need to be dark surface */
+.dark :where(input.bg-white),
+.dark :where(textarea.bg-white),
+.dark :where(select.bg-white) {
+  background-color: rgb(26 26 26);
+  color: rgb(245 245 244);
+}
+
+/* Soft selection */
+::selection {
+  background: rgba(16, 185, 129, 0.25);
+  color: inherit;
+}
+
+/* Focus rings — premium */
+:focus-visible {
+  outline: 2px solid var(--emerald-500);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Hide focus ring on mouse, keep for keyboard */
+:focus:not(:focus-visible) { outline: none; }
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
