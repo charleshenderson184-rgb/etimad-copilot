@@ -161,12 +161,17 @@ export function useTour() {
   return ctx;
 }
 
-/** Auto-starts the tour for new users (no localStorage flag). */
+/** Auto-starts the tour for new users on the dashboard (no localStorage flag).
+ *  The tour is a product walkthrough — it should not auto-open on the marketing
+ *  landing page or any other unauthenticated route. Users can still trigger it
+ *  manually from the nav. */
 export function TourAutoStarter() {
   const { start, isActive } = useTour();
   useEffect(() => {
     if (isActive) return;
     if (typeof window === "undefined") return;
+    // Only auto-start on the dashboard. Marketing pages stay clean.
+    if (!window.location.pathname.startsWith("/dashboard")) return;
     // If there's a pending resume step, TourProvider will handle it — don't double-start.
     if (sessionStorage.getItem("etimad_tour_step") !== null) return;
     const completed = localStorage.getItem(STORAGE_KEY);
