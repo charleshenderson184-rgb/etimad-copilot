@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Type / lint caches
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Local secrets — never commit
+.env
+.env.local
+
+# Runtime artifacts
+uploads/
+etimad.db
+etimad.db-journal
+*.sqlite
+*.sqlite3
+
+# Coverage
+.coverage
+htmlcov/
