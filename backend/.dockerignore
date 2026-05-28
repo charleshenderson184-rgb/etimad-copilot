@@ -1,0 +1,24 @@
+# Never bake these into the image
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.env
+.env.*
+etimad.db
+etimad.db-journal
+*.sqlite
+*.sqlite3
+uploads/
+.git/
+.gitignore
+.DS_Store
+Dockerfile
+.dockerignore
+DEPLOYMENT.md
+SCRAPER.md
+scripts/
